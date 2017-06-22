@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title></title>
+	</head>
+	<body>
+		<div >
+			<!--附件模版调用-->
+			<ul id="dom">
+				
+		    </ul>
+		</div>
+	</body>
+</html>
+<script src="js/template.js" type="text/javascript" charset="utf-8"></script>
+<script src="js/StringBuilder.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript">
+	var dom = document.getElementById("dom");
+	var arr = {
+		a:123,
+		b:321
+	};
+	var finallist = new StringBuilder();
+	var str = String.formatmodel(templete.getDom(), arr);
+	finallist.append(str);
+	dom.innerHTML=finallist.toString();
+</script>
