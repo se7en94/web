@@ -494,7 +494,8 @@ ol.type li a:hover {
 	transition-property: transform, opacity;
 }
 .portfolio-item {
-	margin-bottom: 30px;
+	/*margin-bottom: 30px;*/
+	margin: 10px auto;
 	-webkit-transition: all 0.5s ease-out;
 	-moz-transition: all 0.5s ease-out;
 	-ms-transition: all 0.5s ease-out;
@@ -511,6 +512,9 @@ ol.type li a:hover {
 }
 .portfolio-item .hover-bg {
 	height: 260px;
+	max-width: 260px;
+	line-height: 260px;
+	text-align: center;
 	overflow: hidden;
 	position: relative;
 }
