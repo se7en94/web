@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>TODO</title>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+        }
+
+        li {
+            list-style: none;
+        }
+
+        label {
+            display: inline-block;
+            width: 240px;
+            margin: 5px;
+            word-wrap: break-word;
+            vertical-align: middle;
+        }
+
+        button {
+            padding: 3px 10px;
+            margin: 10px 5px;
+            background-color: #fff;
+            border: 1px solid #666;
+            border-radius: 3px;
+        }
+
+        button:disabled {
+            background-color: #999;
+            color: #eee;
+            border-color: #999;
+        }
+
+        input[type="text"] {
+            border: 0;
+            border-bottom: 1px solid #ccc;
+            width: 150px;
+            margin: 5px;
+        }
+
+        h2 {
+            text-align: center;
+        }
+
+        #todo {
+            width: 400px;
+            margin: 10px auto;
+        }
+
+        .todo-input {
+            text-align: center;
+        }
+
+        .completed {
+            text-decoration: line-through;
+            color: #666;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="todo">
+        <h2>剩余待办：{{todoTotal}}条</h2>
+        <div class="todo-input">
+            <input type="text" v-model.trim="todoNew">
+            <button @click="todoAdd">添加</button>
+            <button @click="deleteSelected">删除已完成项</button>
+        </div>
+        <ul>
+            <li v-for="(todo,index) in todoList">
+                <input type="checkbox" id="'todo'+index" :key="index" v-model="todo.completed">
+                <input type="text" v-if="todo.editable" v-model="todo.text">
+                <label v-else for="'todo'+index" :class="{completed:todo.completed}">{{ todo.text }}</label>
+                <button @click="editTodo(index)">{{ todo.editable | editShow}}</button>
+                <button @click="todoRemove(index)" :disabled="todo.editable">删除</button>
+            </li>
+        </ul>
+
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+</body>
+<script>
+    var STORAGE_KEY = 'todos-vuejs'//名称
+    var todoStorage = {
+        get: function () {
+            var todos = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]')
+            todos.forEach(function (todo, index) {
+                todo.id = index
+            })
+            todoStorage.uid = todos.length
+            return todos
+        },
+        save: function (todos) {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(todos))
+        }
+    }
+
+    var todo = new Vue({
+        el: '#todo',
+        data: {
+            todoNew: '',
+            todoList: todoStorage.get()
+        },
+        watch: {
+            todoList: {
+                handler: function (todoList) {
+                    todoStorage.save(todoList);
+                },
+                deep: true
+            }
+        },
+        methods: {
+            deleteSelected: function() {
+                this.todoList = this.todoList.filter(function (item){
+                    return !item.completed;
+                })
+            },
+            todoAdd: function () {
+                //添加待办数据对象，包括text内容,completed完成状态,editable编辑状态三个属性
+                //添加后清空输入框
+                if (!!this.todoNew) {
+                    this.todoList.push({
+                        text: this.todoNew,
+                        editable: false,
+                        completed: false
+                    })
+                }
+                this.todoNew = "";
+            },
+            todoRemove: function (index) {
+                //删除待办数据
+                return this.todoList.splice(index,1);
+            },
+            editTodo: function (index) {
+                //编辑待办数据
+                this.todoList[index].editable = !this.todoList[index].editable;
+            }
+        },
+        filters: {
+            editShow: function (value) {
+                //按键文字切换，分别是「确认」和「编辑」，编辑中时「删除」按钮的状态为disable
+                return value ? '确认' : '编辑';
+            }
+        },
+        computed: {
+            todoTotal: function () {
+                //todo:获取剩余待办数量
+                return this.todoList.filter(function(item){
+                    return !item.completed;
+                }).length;
+            },
+            isCompleted: function (){
+                return this.todoList.every(function (val){ return val.completed});
+            }
+        },
+        mounted(){
+            //this.todoList = '';
+            console.log(todoStorage.get())
+        }
+    })
+</script>
+</html>
